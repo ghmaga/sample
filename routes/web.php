@@ -17,4 +17,7 @@ Route::get('/about', 'StaticPagesController@about')->name('about');
 Route::get('signup', 'UsersController@create')->name('signup');
 
 
+ROute::resource('users', 'UsersController');
+
+
 Route::get('cmac', 'StaticPagesController@cmac')->name('cmac');
