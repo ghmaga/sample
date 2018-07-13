@@ -38,6 +38,19 @@ class User extends Authenticatable
         });
     }
 
+    //模型关联User，Statuses
+    public function statuses()
+    {
+        return $this->hasMany(Status::class);
+    }
+
+
+    public function feed()
+    {
+        return $this->statuses()
+                    ->orderBy('created_at', 'desc');
+    }
+
 
     public function gravatar($size = '100')
     {
