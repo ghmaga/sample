@@ -47,14 +47,14 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|max:50',
-            'email' => 'required|email|unique:users|max:255',
+            'name'     => 'required|max:50',
+            'email'    => 'required|email|unique:users|max:255',
             'password' => 'required|confirmed|min:6'
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => bcrypt($request->password),
         ]);
 
@@ -66,9 +66,9 @@ class UsersController extends Controller
 
     protected function sendEmailConfirmationTo($user)
     {
-        $view = 'emails.confirm';
-        $data = compact('user');
-        $to = $user->email;
+        $view    = 'emails.confirm';
+        $data    = compact('user');
+        $to      = $user->email;
         $subject = "感谢注册 LiYLi 应用！请确认你的邮箱。";
 
         Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject) {
@@ -88,12 +88,12 @@ class UsersController extends Controller
     {
         $this->authorize('update', $user);
         $this->validate($request, [
-            'name' => 'required|max:50',
+            'name'     => 'required|max:50',
             'password' => 'nullable|confirmed|min:6'
         ]);
 
 
-        $data = [];
+        $data         = [];
         $data['name'] = $request->name;
 
         if ($request->password){
@@ -117,8 +117,8 @@ class UsersController extends Controller
 
     public function confirmEmail($token)
     {
-        $user = User::where('activation_token', $token)->firstOrFail();
-        $user->activated = true;
+        $user                   = User::where('activation_token', $token)->firstOrFail();
+        $user->activated        = true;
         $user->activation_token = null;
         $user->save();
 
@@ -126,4 +126,20 @@ class UsersController extends Controller
         session()->flash('success', '恭喜您，账户激活成功！');
         return redirect()->route('users.show', [$user]);
     }
+
+
+    public function followings(User $user)
+    {
+        $users = $user->followings()->paginate(30);
+        $title = "关注的人";
+        return view('users.show_follow', compact('users', 'title'));
+    }
+
+    public function followers(User $user)
+    {
+        $users = $user->followers()->paginate(30);
+        $title = "粉丝";
+        return view('users.show_follow', compact('users', 'title'));
+    }
+
 }
